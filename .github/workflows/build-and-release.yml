@@ -1,0 +1,79 @@
+name: Build and Package QuickCommit CLI
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  APP_NAME: quickcommit
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [x86_64, aarch64]
+        include:
+          - os: macos-latest
+            arch: x86_64
+          - os: macos-latest
+            arch: aarch64
+          - os: ubuntu-latest
+            arch: x86_64
+          - os: windows-latest
+            arch: x86_64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install cross for cross-compilation
+        run: cargo install cross
+
+      - name: Build for ${{ matrix.os }} (Arch: ${{ matrix.arch }})
+        run: |
+          if [[ ${{ matrix.os }} == 'windows-latest' ]]; then
+            cross build --target x86_64-pc-windows-gnu --release
+          elif [[ ${{ matrix.os }} == 'macos-latest' ]]; then
+            if [[ ${{ matrix.arch }} == 'aarch64' ]]; then
+              cross build --target aarch64-apple-darwin --release
+            else
+              cross build --target x86_64-apple-darwin --release
+            fi
+          else
+            cross build --target x86_64-unknown-linux-gnu --release
+
+      - name: Package CLI binary
+        run: |
+          if [[ ${{ matrix.os }} == 'windows-latest' ]]; then
+            mkdir -p dist/windows
+            cp target/x86_64-pc-windows-gnu/release/${{ APP_NAME }}.exe dist/windows/
+            echo "Install the CLI by running '${{ APP_NAME }}.exe'"
+          elif [[ ${{ matrix.os }} == 'macos-latest' ]]; then
+            if [[ ${{ matrix.arch }} == 'aarch64' ]]; then
+              mkdir -p dist/macos-silicon
+              cp target/aarch64-apple-darwin/release/${{ APP_NAME }} dist/macos-silicon/
+            else
+              mkdir -p dist/macos-intel
+              cp target/x86_64-apple-darwin/release/${{ APP_NAME }} dist/macos-intel/
+            fi
+            echo "Install the CLI by running '${{ APP_NAME }}'"
+          else
+            mkdir -p dist/linux
+            cp target/x86_64-unknown-linux-gnu/release/${{ APP_NAME }} dist/linux/
+            echo "Install the CLI by running '${{ APP_NAME }}'"
+
+      - name: Upload Release Assets
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ APP_NAME }}-${{ matrix.os }}-${{ matrix.arch }}-cli
+          path: dist/
