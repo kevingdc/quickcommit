@@ -51,6 +51,7 @@ jobs:
             fi
           else
             cross build --target x86_64-unknown-linux-gnu --release
+          fi
 
       - name: Package CLI binary
         run: |
@@ -71,6 +72,7 @@ jobs:
             mkdir -p dist/linux
             cp target/x86_64-unknown-linux-gnu/release/$APP_NAME dist/linux/
             echo "Install the CLI by running '$APP_NAME'"
+          fi
 
       - name: Upload Release Assets
         uses: actions/upload-artifact@v3
