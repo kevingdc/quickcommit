@@ -41,10 +41,10 @@ jobs:
 
       - name: "Build for ${{ matrix.os }} (Arch: ${{ matrix.arch }})"
         run: |
-          if [[ ${{ matrix.os }} == 'windows-latest' ]]; then
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
             cross build --target x86_64-pc-windows-gnu --release
-          elif [[ ${{ matrix.os }} == 'macos-latest' ]]; then
-            if [[ ${{ matrix.arch }} == 'aarch64' ]]; then
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            if [ "${{ matrix.arch }}" == "aarch64" ]; then
               cross build --target aarch64-apple-darwin --release
             else
               cross build --target x86_64-apple-darwin --release
@@ -54,12 +54,12 @@ jobs:
 
       - name: Package CLI binary
         run: |
-          if [[ ${{ matrix.os }} == 'windows-latest' ]]; then
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
             mkdir -p dist/windows
             cp target/x86_64-pc-windows-gnu/release/$APP_NAME.exe dist/windows/
             echo "Install the CLI by running '$APP_NAME.exe'"
-          elif [[ ${{ matrix.os }} == 'macos-latest' ]]; then
-            if [[ ${{ matrix.arch }} == 'aarch64' ]]; then
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            if [ "${{ matrix.arch }}" == "aarch64" ]; then
               mkdir -p dist/macos-silicon
               cp target/aarch64-apple-darwin/release/$APP_NAME dist/macos-silicon/
             else
