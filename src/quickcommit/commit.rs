@@ -6,11 +6,11 @@ use std::error::Error;
 const BASE_PROMPT: &str = "
     Take a deep breath and work on this problem step-by-step.
     Summarize the provided diff into a clear and concise written commit message.
-    Use the imperative style for the subject, use the imperative style for the body, and limit the combination of the entire subject line to 50 characters or less.
-    Optionally, use a scope, and limit the scope types to 50 characters or less. Be as descriptive as possible, but keep it to a single line.
+    Use the imperative style for the subject, use the imperative style for the body, and limit the entire subject line to 50 characters or less.
     It should be ready to be pasted into a commit without further editing.
     Do not add the ``` to the start and end of the commit message.
     It is important that you start the subject with a commit type based on the changes made.
+    The title in the subject after the commit type should start with a capital letter.
 
     The following are the commit types that you can use:
         feat     (new feature)
