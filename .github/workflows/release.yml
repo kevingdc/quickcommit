@@ -19,6 +19,7 @@ jobs:
   upload-assets:
     needs: create-release
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: aarch64-unknown-linux-gnu
@@ -47,7 +48,7 @@ jobs:
       - name: Install dependencies
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-          sudo apt-get install libssl-dev -y
+          sudo apt-get install -y pkg-config libssl-dev
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
           # (required) Comma-separated list of binary names (non-extension portion of filename) to build and upload.
